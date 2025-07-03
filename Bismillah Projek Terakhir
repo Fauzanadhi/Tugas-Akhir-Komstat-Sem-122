@@ -842,7 +842,7 @@ library(reshape2)
 Laporan ini menyajikan hasil analisis hubungan antar variabel menggunakan:
 
 1. **Uji Korelasi Spearman** untuk menganalisis hubungan antara variabel numerik
-2. **Uji Asosiasi Cramer's V** untuk menganalisis hubungan antara variabel kategorik
+2. **Uji Asosiasi Cramer\'s V** untuk menganalisis hubungan antara variabel kategorik
 
 ---
 
@@ -874,12 +874,12 @@ if (!is.null(params$spearman)) {
 
 ---
 
-# Hasil Uji Asosiasi Cramer's V
+# Hasil Uji Asosiasi Cramer\'s V
 
 ```{r cramer-results}
 if (!is.null(params$cramer)) {
   cat("Variabel yang dianalisis:", params$cramer$x, "vs", params$cramer$y, "\\n")
-  cat("Cramer's V:", round(params$cramer$V, 4), "\\n")
+  cat("Cramer\'s V:", round(params$cramer$V, 4), "\\n")
   cat("Chi-square:", round(params$cramer$chisq$statistic, 4), "\\n")
   cat("p-value:", format(params$cramer$pval, scientific = TRUE), "\\n")
   cat("Degrees of freedom:", params$cramer$chisq$parameter, "\\n")
@@ -894,7 +894,7 @@ if (!is.null(params$cramer)) {
   cat("- Kekuatan asosiasi:", strength, "\\n")
   cat("- Signifikansi:", significance, "(Î± = 0.05)\\n")
 } else {
-  cat("Data Cramer's V tidak tersedia")
+  cat("Data Cramer\'s V tidak tersedia")
 }
 ```
 
@@ -942,7 +942,7 @@ if (!is.null(params$cramer)) {
   strength <- if(V >= 0.5) "kuat" else if(V >= 0.3) "sedang" else if(V >= 0.1) "lemah" else "sangat lemah"
   significance <- if(pval < 0.05) "signifikan" else "tidak signifikan"
   
-  cramer_conclusion <- paste("2. Uji Cramer's V menunjukkan asosiasi", strength, "yang", significance,
+  cramer_conclusion <- paste("2. Uji Cramer\'s V menunjukkan asosiasi", strength, "yang", significance,
                             "antara", params$cramer$x, "dan", params$cramer$y, "(V =", V, ")")
   conclusions <- c(conclusions, cramer_conclusion)
 }
