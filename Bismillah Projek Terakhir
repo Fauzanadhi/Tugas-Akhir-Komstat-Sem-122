@@ -49,7 +49,7 @@ ui <- fluidPage(
       }
     "))
   ),
-
+  
   # Header 
   div(
     class = "hero-section",
@@ -84,7 +84,7 @@ ui <- fluidPage(
           "Format yang didukung: CSV, XLSX"
         )
       ),
-
+      
       # Spearman section dengan card styling
       div(
         class = "analysis-card",
@@ -94,11 +94,11 @@ ui <- fluidPage(
         uiOutput("spearman_ui")
       ),
       
- # Cramer's V section dengan card styling
+      # Cramer's V section dengan card styling
       div(
         class = "analysis-card",
         style = "background: white; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #28a745; border: 1px solid #dee2e6;",
-        h4("ðŸ§© Uji Asosiasi CramÃ©r's V", style = "color: #212529; margin-bottom: 15px; font-weight: bold;"),
+        h4("🧩 Uji Asosiasi CramÃ©r's V", style = "color: #212529; margin-bottom: 15px; font-weight: bold;"),
         p("Untuk variabel kategorik vs kategorik", style = "font-size: 0.9rem; color: #495057; margin-bottom: 15px; font-weight: 500;"),
         uiOutput("cramer_ui")
       ),
@@ -115,7 +115,7 @@ ui <- fluidPage(
         uiOutput("download_ui")
       )
     ),
-
+    
     mainPanel(
       width = 8,
       
@@ -256,67 +256,69 @@ server <- function(input, output, session) {
     correlation_matrix = NULL,
     download_ready = FALSE
   )
-
-output$download_report <- downloadHandler(
-  filename = function() {
-    paste("Laporan_Analisis_", Sys.Date(), ".docx", sep = "")
-  },
-  content = function(file) {
-    # Memunculkan progress message menggunakan showNotification
-    notification_id <- showNotification(
-      "🔄 Sedang mempersiapkan laporan Word...", 
-      duration = NULL, 
-      type = "message"
-    )
-    
-    tryCatch({
-      # Buat file RMD sementara
-      tempReport <- file.path(tempdir(), "report.Rmd")
-      
-      # Buat isi dari RMD ke file sementara
-      writeLines(rmd_content, tempReport)
-      
-      # Render dokumen dengan parameter
-      rmarkdown::render(
-        input = tempReport,
-        output_format = rmarkdown::word_document(),
-        output_file = file,
-        params = list(
-          spearman = values$spearman_result,
-          cramer = values$cramer_result,
-          correlation = values$correlation_matrix
-        ),
-        envir = new.env(parent = globalenv()),
-        quiet = TRUE
-      )
-      
-      # Menghilangkan notifikasi progres
-      removeNotification(notification_id)
-      
-      # Memunculkan notifikasi berhasil
-      showNotification(
-        "✅ Laporan Word berhasil diunduh!", 
-        duration = 5, 
+  
+  output$download_report <- downloadHandler(
+    filename = function() {
+      paste("Laporan_Analisis_", Sys.Date(), ".docx", sep = "")
+    },
+    content = function(file) {
+      # Memunculkan progress message menggunakan showNotification
+      notification_id <- showNotification(
+        "🔄 Sedang mempersiapkan laporan Word...", 
+        duration = NULL, 
         type = "message"
       )
       
-    }, error = function(e) {
-      # Menghilangkan notifikasi progres
-      removeNotification(notification_id)
-      
-      # Memunculkan notifikasi error
-      showNotification(
-        paste("❌ Error membuat laporan:", e$message), 
-        duration = 10, 
-        type = "error"
-      )
-      
-      print(paste("Debug error:", e$message))  # For debugging
-    })
-  }
-)
-
- # Validasi input
+      tryCatch({
+        # Buat file RMD sementara
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        
+        # Buat isi dari RMD ke file sementara
+        writeLines(rmd_content, tempReport)
+        
+        # Render dokumen dengan parameter
+        rmarkdown::render(
+          input = tempReport,
+          output_format = rmarkdown::word_document(),
+          output_file = file,
+          params = list(
+            spearman = values$spearman_result,
+            cramer = values$cramer_result,
+            correlation = values$correlation_matrix
+          ),
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+        
+        # Menghilangkan notifikasi progres
+        removeNotification(notification_id)
+        
+        # Memunculkan notifikasi berhasil
+        showNotification(
+          "✅ Laporan Word berhasil diunduh!", 
+          duration = 5, 
+          type = "message"
+        )
+        
+      }, error = function(e) {
+        # Menghilangkan notifikasi progres
+        removeNotification(notification_id)
+        
+        # Memunculkan notifikasi error
+        showNotification(
+          paste("❌ Error membuat laporan:", e$message), 
+          duration = 10, 
+          type = "error"
+        )
+        
+        print(paste("Debug error:", e$message))  # For debugging
+      })
+    }
+  )
+  observeEvent(input$analyze, {
+    req(values$data)
+    
+  # Validasi input
   if(is.null(input$spearman_x) || is.null(input$spearman_y) || 
      is.null(input$cramer_x) || is.null(input$cramer_y)) {
     showNotification(
@@ -408,8 +410,8 @@ output$download_report <- downloadHandler(
       )
       return()
     } 
-
-   
+    
+    
     chisq_test <- chisq.test(tbl, correct = FALSE)
     n <- sum(tbl)
     V <- sqrt(chisq_test$statistic / (n * (min(nrow(tbl), ncol(tbl)) - 1)))
@@ -458,9 +460,9 @@ output$download_report <- downloadHandler(
       type = "error"
     )
   })
-
-
- # Render hasil Spearman
+  })
+  
+  # Render hasil Spearman
   output$spearman_result <- renderPrint({
     req(values$spearman_result)
     test <- values$spearman_result$test
@@ -470,7 +472,7 @@ output$download_report <- downloadHandler(
     if(!is.null(test$conf.int)) {
       cat("95% CI:", paste(round(test$conf.int, 4), collapse = " - "), "\n")
     }
-  })
+   })
   
   output$spearman_plot <- renderPlotly({
     req(values$spearman_result)
@@ -534,8 +536,8 @@ output$download_report <- downloadHandler(
       "</div>"
     ))
   })
-
- # Render hasil Cramér's V
+  
+  # Render hasil Cramér's V
   output$cramer_result <- renderPrint({
     req(values$cramer_result)
     cat("Uji Asosiasi Cramér's V\n")
@@ -630,7 +632,7 @@ output$download_report <- downloadHandler(
       cat("\n")
     }
   })
-
+  
   # Correlation heatmap
   output$correlation_heatmap <- renderPlot({
     req(values$correlation_matrix)
@@ -670,8 +672,8 @@ output$download_report <- downloadHandler(
       "</div>"
     ))
   })
-
-# Load data dengan error handling
+  
+  # Load data dengan error handling
   observeEvent(input$file, {
     tryCatch({
       ext <- tools::file_ext(input$file$name)
@@ -756,9 +758,9 @@ output$download_report <- downloadHandler(
       )
     }
   })
-
-
- output$cramer_ui <- renderUI({
+  
+  
+  output$cramer_ui <- renderUI({
     req(values$data)
     # Identifikasi variabel kategorik dengan lebih robust
     cat_vars <- names(values$data)[sapply(values$data, function(x) {
@@ -813,11 +815,11 @@ output$download_report <- downloadHandler(
     }
   })
   
-# Template buat laporan di Word
+  # Template untuk laporan Word
   rmd_content <- '---
 title: "Laporan Analisis Korelasi dan Asosiasi"
 author: "Aplikasi Uji Korelasi & Asosiasi"
-date: "r Sys.Date()"
+date: "`r Sys.Date()`"
 output: 
   word_document:
     reference_docx: NULL
@@ -827,23 +829,25 @@ params:
   correlation: NULL
 ---
 
-{r setup, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(knitr)
 library(ggplot2)
 library(reshape2)
-
+```
 
 # Executive Summary
 
 Laporan ini menyajikan hasil analisis hubungan antar variabel menggunakan:
 
-1. *Uji Korelasi Spearman* untuk menganalisis hubungan antara variabel numerik
-2. *Uji Asosiasi Cramér\'s V* untuk menganalisis hubungan antara variabel kategorik
+1. **Uji Korelasi Spearman** untuk menganalisis hubungan antara variabel numerik
+2. **Uji Asosiasi CramÃ©r\'s V** untuk menganalisis hubungan antara variabel kategorik
+
+---
 
 # Hasil Uji Korelasi Spearman
 
-{r spearman-results}
+```{r spearman-results}
 if (!is.null(params$spearman)) {
   test <- params$spearman$test
   cat("Variabel yang dianalisis:", params$spearman$x, "vs", params$spearman$y, "\\n")
@@ -861,20 +865,20 @@ if (!is.null(params$spearman)) {
   cat("\\nInterpretasi:\\n")
   cat("- Kekuatan korelasi:", strength, "\\n")
   cat("- Arah korelasi:", direction, "\\n")  
-  cat("- Signifikansi:", significance, "(α = 0.05)\\n")
+  cat("- Signifikansi:", significance, "(Î± = 0.05)\\n")
 } else {
   cat("Data Spearman tidak tersedia")
 }
-
+```
 
 ---
 
-# Hasil Uji Asosiasi Cramér\'s V
+# Hasil Uji Asosiasi CramÃ©r\'s V
 
-{r cramer-results}
+```{r cramer-results}
 if (!is.null(params$cramer)) {
   cat("Variabel yang dianalisis:", params$cramer$x, "vs", params$cramer$y, "\\n")
-  cat("Cramér\'s V:", round(params$cramer$V, 4), "\\n")
+  cat("CramÃ©r\'s V:", round(params$cramer$V, 4), "\\n")
   cat("Chi-square:", round(params$cramer$chisq$statistic, 4), "\\n")
   cat("p-value:", format(params$cramer$pval, scientific = TRUE), "\\n")
   cat("Degrees of freedom:", params$cramer$chisq$parameter, "\\n")
@@ -887,15 +891,18 @@ if (!is.null(params$cramer)) {
   
   cat("\\nInterpretasi:\\n")
   cat("- Kekuatan asosiasi:", strength, "\\n")
-  cat("- Signifikansi:", significance, "(α = 0.05)\\n")
+  cat("- Signifikansi:", significance, "(Î± = 0.05)\\n")
 } else {
-  cat("Data Cramér\'s V tidak tersedia")
+  cat("Data CramÃ©r\'s V tidak tersedia")
 }
+```
+
+---
 
 # Matrix Korelasi
 
 
-{r correlation-matrix}
+```{r correlation-matrix}
 if (!is.null(params$correlation)) {
   kable(params$correlation, 
         caption = "Matrix Korelasi Spearman untuk semua variabel numerik",
@@ -904,12 +911,15 @@ if (!is.null(params$correlation)) {
 } else {
   cat("Matrix korelasi tidak tersedia\\n")
 }
+```
+
+---
 
 # Kesimpulan
 
 Berdasarkan analisis yang dilakukan:
 
-{r conclusions}
+```{r conclusions}
 conclusions <- c()
 
 if (!is.null(params$spearman)) {
@@ -931,7 +941,7 @@ if (!is.null(params$cramer)) {
   strength <- if(V >= 0.5) "kuat" else if(V >= 0.3) "sedang" else if(V >= 0.1) "lemah" else "sangat lemah"
   significance <- if(pval < 0.05) "signifikan" else "tidak signifikan"
   
-  cramer_conclusion <- paste("2. Uji Cramér\'s V menunjukkan asosiasi", strength, "yang", significance,
+  cramer_conclusion <- paste("2. Uji CramÃ©r\'s V menunjukkan asosiasi", strength, "yang", significance,
                             "antara", params$cramer$x, "dan", params$cramer$y, "(V =", V, ")")
   conclusions <- c(conclusions, cramer_conclusion)
 }
@@ -943,11 +953,11 @@ if (length(conclusions) > 0) {
 } else {
   cat("Tidak ada hasil analisis yang tersedia untuk disimpulkan.")
 }
-
+```
 
 ---
 
-Laporan ini dibuat secara otomatis oleh Aplikasi Uji Korelasi & Asosiasi
+*Laporan ini dibuat secara otomatis oleh Aplikasi Uji Korelasi & Asosiasi*
 '
 
 }
