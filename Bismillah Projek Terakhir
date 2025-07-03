@@ -8,6 +8,14 @@ library(plotly)
 library(rstatix)
 library(bslib)
 library(DT)
+library(reshape2)
+library(shinyFeedback)
+library(rmarkdown)
+library(knitr)
+library(tools)
+library(tinytex)
+library(shinydashboard)
+library(shinyWidgets)
 
 #UI
 ui <- fluidPage(
