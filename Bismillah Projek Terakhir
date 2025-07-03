@@ -94,11 +94,11 @@ ui <- fluidPage(
         uiOutput("spearman_ui")
       ),
       
-      # Cramer's V section dengan card styling
+ # Cramer's V section dengan card styling
       div(
         class = "analysis-card",
         style = "background: white; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #28a745; border: 1px solid #dee2e6;",
-        h4("🧩 Uji Asosiasi Cramér's V", style = "color: #212529; margin-bottom: 15px; font-weight: bold;"),
+        h4("ðŸ§© Uji Asosiasi CramÃ©r's V", style = "color: #212529; margin-bottom: 15px; font-weight: bold;"),
         p("Untuk variabel kategorik vs kategorik", style = "font-size: 0.9rem; color: #495057; margin-bottom: 15px; font-weight: 500;"),
         uiOutput("cramer_ui")
       ),
