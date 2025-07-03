@@ -942,7 +942,7 @@ if (!is.null(params$cramer)) {
   strength <- if(V >= 0.5) "kuat" else if(V >= 0.3) "sedang" else if(V >= 0.1) "lemah" else "sangat lemah"
   significance <- if(pval < 0.05) "signifikan" else "tidak signifikan"
   
-  cramer_conclusion <- paste("2. Uji CramÃ©r\'s V menunjukkan asosiasi", strength, "yang", significance,
+  cramer_conclusion <- paste("2. Uji Cramer's V menunjukkan asosiasi", strength, "yang", significance,
                             "antara", params$cramer$x, "dan", params$cramer$y, "(V =", V, ")")
   conclusions <- c(conclusions, cramer_conclusion)
 }
